@@ -4,38 +4,7 @@ import { Check, ChevronDown, ChevronUp } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 
-// Special placeholder value to represent empty strings 
-// since Radix UI doesn't allow empty string values for SelectItem
-const EMPTY_STRING_PLACEHOLDER = "__EMPTY_STRING__"
-
-// Create a type for the Select component that includes the value prop
-type SelectProps = React.ComponentPropsWithoutRef<typeof SelectPrimitive.Root>
-
-// Custom wrapper around SelectPrimitive.Root to handle empty string values
-const Select = (props: SelectProps) => {
-  const { value, onValueChange, defaultValue, ...restProps } = props
-  
-  // Convert empty string values to our placeholder
-  const convertedValue = value === "" ? EMPTY_STRING_PLACEHOLDER : value
-  const convertedDefaultValue = defaultValue === "" ? EMPTY_STRING_PLACEHOLDER : defaultValue
-  
-  // Create a wrapped onValueChange handler that converts the placeholder back to empty string
-  const wrappedOnValueChange = onValueChange
-    ? (value: string) => {
-        onValueChange(value === EMPTY_STRING_PLACEHOLDER ? "" : value)
-      }
-    : undefined
-
-  return (
-    <SelectPrimitive.Root
-      {...restProps}
-      value={convertedValue as string}
-      defaultValue={convertedDefaultValue as string}
-      onValueChange={wrappedOnValueChange}
-    />
-  )
-}
-Select.displayName = "Select"
+const Select = SelectPrimitive.Root
 
 const SelectGroup = SelectPrimitive.Group
 
@@ -140,36 +109,27 @@ const SelectLabel = React.forwardRef<
 ))
 SelectLabel.displayName = SelectPrimitive.Label.displayName
 
-// Custom wrapper around SelectPrimitive.Item to handle empty string values
 const SelectItem = React.forwardRef<
   React.ElementRef<typeof SelectPrimitive.Item>,
-  React.ComponentPropsWithoutRef<typeof SelectPrimitive.Item> & { value: string }
->(({ className, children, value, ...props }, ref) => {
-  // Convert empty string values to our placeholder
-  // This ensures that the Radix UI component doesn't receive an empty string
-  // which would cause an error
-  const finalValue = value === "" ? EMPTY_STRING_PLACEHOLDER : value
-  
-  return (
-    <SelectPrimitive.Item
-      ref={ref}
-      className={cn(
-        "relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
-        className
-      )}
-      value={finalValue}
-      {...props}
-    >
-      <span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
-        <SelectPrimitive.ItemIndicator>
-          <Check className="h-4 w-4" />
-        </SelectPrimitive.ItemIndicator>
-      </span>
+  React.ComponentPropsWithoutRef<typeof SelectPrimitive.Item>
+>(({ className, children, ...props }, ref) => (
+  <SelectPrimitive.Item
+    ref={ref}
+    className={cn(
+      "relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+      className
+    )}
+    {...props}
+  >
+    <span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
+      <SelectPrimitive.ItemIndicator>
+        <Check className="h-4 w-4" />
+      </SelectPrimitive.ItemIndicator>
+    </span>
 
-      <SelectPrimitive.ItemText>{children}</SelectPrimitive.ItemText>
-    </SelectPrimitive.Item>
-  )
-})
+    <SelectPrimitive.ItemText>{children}</SelectPrimitive.ItemText>
+  </SelectPrimitive.Item>
+))
 SelectItem.displayName = SelectPrimitive.Item.displayName
 
 const SelectSeparator = React.forwardRef<
@@ -193,6 +153,4 @@ export {
   SelectLabel,
   SelectItem,
   SelectSeparator,
-  SelectScrollUpButton,
-  SelectScrollDownButton,
 }
